@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Confirmed — GTM Demo Store (Pixel Only)</title>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+  </script>
+  <!-- GTM Head Snippet — replace GTM-XXXXXXX -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+</head>
+<body>
+
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <header>
+    <a class="logo" href="index.html">🛍 PixelStore</a>
+    <nav>
+      <a href="index.html">Shop</a>
+      <a href="cart.html">Cart <span class="cart-badge">0</span></a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="confirm-box">
+      <div class="check-icon">✅</div>
+      <h1>Order Confirmed!</h1>
+      <p id="confirm-message">Thank you for your purchase. Your order has been placed successfully.</p>
+      <div id="order-details" style="background:#f0f2f5;border-radius:8px;padding:16px;margin-bottom:24px;text-align:left;font-size:.9rem;">
+        <!-- Populated by JS -->
+      </div>
+      <a href="index.html" class="btn btn-primary">Continue Shopping</a>
+    </div>
+
+    <div style="max-width:560px;margin:0 auto;padding:0 0 40px;padding-top:0;">
+      <div style="padding:16px;background:#e8f5e9;border-radius:8px;border-left:4px solid #42b72a;font-size:.85rem;">
+        <strong>📋 GTM Events on this page:</strong><br/><br/>
+        The <code style="color:#1877f2;">pixel_purchase</code> event was already fired on the
+        <em>checkout page</em> when the user clicked "Place Order". This page is the post-purchase
+        landing — no additional pixel event fires here to avoid double-counting.<br/><br/>
+        GTM triggered the Facebook Pixel <em>Purchase</em> standard event with the full order value
+        and content IDs.
+      </div>
+    </div>
+  </div>
+
+  <div id="debug-panel">
+    <div class="debug-title">▶ dataLayer Monitor (Scenario 1 — Pixel Only)</div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const orderId = sessionStorage.getItem('last_order_id') || 'ORD-DEMO';
+      const total   = sessionStorage.getItem('last_order_total') || '0.00';
+
+      document.getElementById('order-details').innerHTML = `
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:var(--muted);">Order ID</span>
+          <strong>${orderId}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--muted);">Total Charged</span>
+          <strong>$${total}</strong>
+        </div>`;
+
+      // Log to debug panel to show what was sent
+      debugLog('page_view', { page: 'confirmation', order_id: orderId });
+    });
+  </script>
+</body>
+</html>
