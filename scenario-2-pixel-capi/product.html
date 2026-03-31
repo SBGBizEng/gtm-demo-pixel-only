@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — GTM Demo Store (Pixel + CAPI)</title>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+  </script>
+  <!-- GTM Head Snippet — replace GTM-YYYYYYY -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-YYYYYYY');</script>
+</head>
+<body>
+
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-YYYYYYY"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <header>
+    <a class="logo" href="index.html">🛍 CAPIStore</a>
+    <nav>
+      <a href="index.html">Shop</a>
+      <a href="cart.html">Cart <span class="cart-badge">0</span></a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <p style="margin-bottom:20px;color:var(--muted);">
+      <a href="index.html" style="color:var(--accent);text-decoration:none;">← Back to Shop</a>
+    </p>
+    <div class="product-detail" id="product-detail">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <div id="debug-panel">
+    <div class="debug-title">▶ dataLayer Monitor (Scenario 2 — Pixel + CAPI) &nbsp;|&nbsp;
+      <span style="color:#42b72a;">■ Pixel (browser)</span> &nbsp;
+      <span style="color:#e9711c;">■ CAPI (server)</span>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/products.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const product = getProductById(params.get('id'));
+
+      if (!product) {
+        document.getElementById('product-detail').innerHTML =
+          '<p>Product not found. <a href="index.html">Return to shop</a></p>';
+        return;
+      }
+
+      document.title = `${product.name} — GTM Demo Store`;
+      document.getElementById('product-detail').innerHTML = `
+        <img src="${product.image}" alt="${product.name}"
+             onerror="this.style.background='#c8d0de';this.removeAttribute('src')" />
+        <div class="detail-info">
+          <p style="color:var(--muted);font-size:.85rem;margin-bottom:6px;">${product.category}</p>
+          <h1>${product.name}</h1>
+          <div class="detail-price" style="color:var(--accent);">$${product.price.toFixed(2)}</div>
+          <p class="detail-desc">${product.description}</p>
+          <div class="qty-row">
+            <label for="qty">Quantity:</label>
+            <input type="number" id="qty" value="1" min="1" max="10" />
+          </div>
+          <button class="btn btn-accent" id="add-to-cart-btn" style="width:100%;margin-bottom:12px;">
+            Add to Cart
+          </button>
+          <a href="cart.html" class="btn btn-outline" style="width:100%;display:block;color:var(--accent);border-color:var(--accent);">
+            View Cart
+          </a>
+
+          <div style="margin-top:24px;padding:16px;background:#fff3e0;border-radius:8px;font-size:.85rem;color:var(--muted);">
+            <strong style="color:var(--text);">📋 GTM Events fired on this page:</strong><br/><br/>
+            <span style="color:#42b72a;">■</span> <code>pixel_view_content</code> → GTM Web Container →
+            Facebook Pixel tag → <em>ViewContent</em> (browser)<br/><br/>
+            <span style="color:#e9711c;">■</span> <code>capi_view_content</code> → GTM Web Container →
+            forwarded to GTM Server Container → CAPI tag → <em>ViewContent</em> (server)<br/><br/>
+            <strong style="color:#c0392b;">⚠ No event_id set — events will not be deduplicated</strong><br/>
+            <strong style="color:#c0392b;">⚠ No user_data in CAPI payload — PII not forwarded</strong>
+          </div>
+        </div>`;
+
+      // ── Fire both Pixel and CAPI ViewContent ──────────────────────────────
+      pushViewContent(product);   // browser pixel
+      capiViewContent(product);   // server CAPI
+
+      // ── Add to Cart handler ───────────────────────────────────────────────
+      document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+        const qty = parseInt(document.getElementById('qty').value, 10) || 1;
+        Cart.add(product, qty);
+        pushAddToCart(product, qty);   // browser pixel
+        capiAddToCart(product, qty);   // server CAPI
+        showToast(`✓ Added ${qty}× ${product.name} to cart`);
+      });
+    });
+  </script>
+</body>
+</html>

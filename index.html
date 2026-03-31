@@ -3,85 +3,259 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GTM Demo Store — Pixel Only</title>
-  <link rel="stylesheet" href="css/style.css" />
-
-  <!-- ═══════════════════════════════════════════════════════════════════
-       GOOGLE TAG MANAGER — SCENARIO 1: PIXEL ONLY
-       Replace GTM-XXXXXXX with your actual GTM Container ID
-       ═══════════════════════════════════════════════════════════════════ -->
-  <script>
-    window.dataLayer = window.dataLayer || [];
-  </script>
-  <!-- GTM Head Snippet -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
-  <!-- End GTM Head Snippet -->
+  <title>GTM Demo Sites — Facebook Pixel & CAPI Testing</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f6fa;
+      color: #1c1e21;
+      min-height: 100vh;
+    }
+    header {
+      background: #1c1e21;
+      color: #fff;
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    header h1 { font-size: 1.3rem; font-weight: 700; }
+    header p  { font-size: .85rem; opacity: .65; margin-top: 2px; }
+    .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+    .intro {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .intro h2 { font-size: 1.8rem; margin-bottom: 12px; }
+    .intro p  { color: #606770; font-size: 1rem; max-width: 600px; margin: 0 auto; }
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.10);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.13); }
+    .card-header {
+      padding: 28px 28px 20px;
+      color: #fff;
+    }
+    .card-header.blue  { background: linear-gradient(135deg, #1877f2 0%, #0d5dbf 100%); }
+    .card-header.orange { background: linear-gradient(135deg, #e9711c 0%, #c95e10 100%); }
+    .card-header .scenario-label {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      opacity: .8;
+      margin-bottom: 8px;
+    }
+    .card-header h3 { font-size: 1.3rem; margin-bottom: 6px; }
+    .card-header p  { font-size: .875rem; opacity: .85; }
+    .card-body { padding: 24px 28px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      font-size: .78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .tag.green  { background: #e8f5e9; color: #2e7d32; }
+    .tag.blue   { background: #e3f0ff; color: #1877f2; }
+    .tag.orange { background: #fff3e0; color: #e9711c; }
+    .tag.red    { background: #fdecea; color: #c62828; }
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .feature-list li { font-size: .875rem; color: #444; display: flex; align-items: flex-start; gap: 8px; }
+    .feature-list li::before { content: "✓"; color: #42b72a; font-weight: 700; flex-shrink: 0; }
+    .feature-list li.warn::before { content: "⚠"; color: #e9711c; }
+    .feature-list li.no::before   { content: "✗"; color: #e02020; }
+    .btn {
+      display: block;
+      text-align: center;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-weight: 700;
+      text-decoration: none;
+      margin-top: auto;
+      transition: opacity .15s;
+    }
+    .btn:hover { opacity: .88; }
+    .btn.blue   { background: #1877f2; color: #fff; }
+    .btn.orange { background: #e9711c; color: #fff; }
+    .divider { border: none; border-top: 1px solid #dddfe2; margin: 0; }
+    .gtm-info {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      padding: 28px;
+      margin-top: 32px;
+    }
+    .gtm-info h3 { font-size: 1.1rem; margin-bottom: 16px; }
+    .gtm-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    .gtm-table th { text-align: left; padding: 8px 12px; background: #f0f2f5; color: #606770; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+    .gtm-table td { padding: 10px 12px; border-top: 1px solid #dddfe2; vertical-align: top; }
+    .gtm-table code { background: #f0f2f5; padding: 2px 6px; border-radius: 4px; font-size: .82rem; }
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: #606770;
+      font-size: .82rem;
+      margin-top: 48px;
+      border-top: 1px solid #dddfe2;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- GTM Body Snippet -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End GTM Body Snippet -->
-
-  <!-- ── Header ── -->
   <header>
-    <a class="logo" href="index.html">🛍 PixelStore</a>
-    <nav>
-      <a href="index.html">Shop</a>
-      <a href="cart.html">Cart <span class="cart-badge">0</span></a>
-    </nav>
+    <div>
+      <h1>GTM Demo Sites</h1>
+      <p>Facebook Pixel &amp; Conversions API — Google Tag Manager Training</p>
+    </div>
   </header>
 
-  <!-- ── Hero Banner ── -->
-  <div style="background:linear-gradient(135deg,#1877f2 0%,#0d5dbf 100%);color:#fff;padding:48px 24px;text-align:center;">
-    <h1 style="font-size:2rem;margin-bottom:8px;">GTM Demo Store</h1>
-    <p style="opacity:.85;font-size:1.1rem;">Scenario 1 — Facebook Pixel (Browser-Side Events Only)</p>
-    <div style="margin-top:16px;background:rgba(255,255,255,.15);display:inline-block;padding:8px 20px;border-radius:20px;font-size:.85rem;">
-      GTM Container: <strong>GTM-XXXXXXX</strong> &nbsp;|&nbsp; Pixel ID: <strong>YOUR_PIXEL_ID</strong>
-    </div>
-  </div>
-
-  <!-- ── Products ── -->
   <div class="container">
-    <h2 class="page-title">Featured Products</h2>
-    <div class="product-grid" id="product-grid">
-      <!-- Populated by JS -->
+
+    <div class="intro">
+      <h2>Choose a Testing Scenario</h2>
+      <p>Two standalone demo e-commerce stores, each pre-wired with a GTM data layer pushing standard Facebook events. Replace the placeholder GTM Container ID and Pixel ID to connect your own setup.</p>
     </div>
+
+    <div class="cards">
+
+      <!-- ── Scenario 1 ── -->
+      <div class="card">
+        <div class="card-header blue">
+          <div class="scenario-label">Scenario 1</div>
+          <h3>Pixel Only</h3>
+          <p>Browser-side events via the Facebook Pixel GTM template</p>
+        </div>
+        <div class="card-body">
+          <div class="tag-list">
+            <span class="tag blue">GTM Web Container</span>
+            <span class="tag green">Facebook Pixel Tag</span>
+            <span class="tag green">Browser Events</span>
+          </div>
+          <ul class="feature-list">
+            <li>PageView on every page (GTM All Pages trigger)</li>
+            <li>ViewContent on product detail page</li>
+            <li>AddToCart on button click</li>
+            <li>InitiateCheckout on checkout page load</li>
+            <li>Purchase on order submission</li>
+            <li class="no">No server-side CAPI events</li>
+            <li class="no">No deduplication (event_id)</li>
+          </ul>
+          <hr class="divider" />
+          <div style="font-size:.8rem;color:#606770;">
+            <strong>GTM Container:</strong> <code style="background:#e3f0ff;padding:2px 6px;border-radius:4px;color:#1877f2;">GTM-XXXXXXX</code><br/>
+            <strong>Pixel ID:</strong> <code style="background:#e3f0ff;padding:2px 6px;border-radius:4px;color:#1877f2;">YOUR_PIXEL_ID</code>
+          </div>
+          <a href="scenario-1-pixel-only/index.html" class="btn blue">Open Scenario 1 →</a>
+        </div>
+      </div>
+
+      <!-- ── Scenario 2 ── -->
+      <div class="card">
+        <div class="card-header orange">
+          <div class="scenario-label">Scenario 2</div>
+          <h3>Pixel + CAPI</h3>
+          <p>Browser events via Pixel + server events via Conversions API template</p>
+        </div>
+        <div class="card-body">
+          <div class="tag-list">
+            <span class="tag blue">GTM Web Container</span>
+            <span class="tag orange">CAPI Server Container</span>
+            <span class="tag green">Browser + Server Events</span>
+          </div>
+          <ul class="feature-list">
+            <li>All Pixel events from Scenario 1 (browser)</li>
+            <li>Matching CAPI events forwarded to server container</li>
+            <li>PII collected in checkout form (email, phone, name)</li>
+            <li>PII pushed to dataLayer as <code>pii_collected</code> event</li>
+            <li class="warn">PII available but NOT forwarded to CAPI user_data</li>
+            <li class="no">No deduplication (event_id not set)</li>
+            <li class="no">No SHA-256 hashing implemented</li>
+          </ul>
+          <hr class="divider" />
+          <div style="font-size:.8rem;color:#606770;">
+            <strong>GTM Container:</strong> <code style="background:#fff3e0;padding:2px 6px;border-radius:4px;color:#e9711c;">GTM-YYYYYYY</code><br/>
+            <strong>Pixel ID:</strong> <code style="background:#fff3e0;padding:2px 6px;border-radius:4px;color:#e9711c;">YOUR_PIXEL_ID</code><br/>
+            <strong>CAPI Token:</strong> <code style="background:#fff3e0;padding:2px 6px;border-radius:4px;color:#e9711c;">YOUR_ACCESS_TOKEN</code>
+          </div>
+          <a href="scenario-2-pixel-capi/index.html" class="btn orange">Open Scenario 2 →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Event Reference Table ── -->
+    <div class="gtm-info">
+      <h3>📋 dataLayer Event Reference</h3>
+      <table class="gtm-table">
+        <thead>
+          <tr>
+            <th>dataLayer Event</th>
+            <th>Facebook Standard Event</th>
+            <th>Channel</th>
+            <th>Fired On</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>gtm.js</code> (All Pages)</td>
+            <td>PageView</td>
+            <td>Browser (Pixel)</td>
+            <td>Every page load — via GTM built-in trigger</td>
+          </tr>
+          <tr>
+            <td><code>pixel_view_content</code></td>
+            <td>ViewContent</td>
+            <td>Browser (Pixel) · S2: also Server (CAPI)</td>
+            <td>Product detail page load</td>
+          </tr>
+          <tr>
+            <td><code>pixel_add_to_cart</code></td>
+            <td>AddToCart</td>
+            <td>Browser (Pixel) · S2: also Server (CAPI)</td>
+            <td>Add to Cart button click</td>
+          </tr>
+          <tr>
+            <td><code>pixel_initiate_checkout</code></td>
+            <td>InitiateCheckout</td>
+            <td>Browser (Pixel) · S2: also Server (CAPI)</td>
+            <td>Checkout page load</td>
+          </tr>
+          <tr>
+            <td><code>pixel_purchase</code></td>
+            <td>Purchase</td>
+            <td>Browser (Pixel) · S2: also Server (CAPI)</td>
+            <td>Place Order button click</td>
+          </tr>
+          <tr>
+            <td><code>pii_collected</code> <em>(S2 only)</em></td>
+            <td>—</td>
+            <td>dataLayer only</td>
+            <td>Checkout form field blur — stores PII in <code>window.customerPII</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
 
-  <!-- ── Debug Panel ── -->
-  <div id="debug-panel">
-    <div class="debug-title">▶ dataLayer Monitor (Scenario 1 — Pixel Only)</div>
-  </div>
+  <footer>
+    GTM Demo Sites · For training purposes only · No real payments processed · Replace all placeholder IDs before use
+  </footer>
 
-  <script src="js/store.js"></script>
-  <script src="js/products.js"></script>
-  <script>
-    // Render product grid
-    document.addEventListener('DOMContentLoaded', () => {
-      const grid = document.getElementById('product-grid');
-      PRODUCTS.forEach(p => {
-        grid.innerHTML += `
-          <a class="product-card" href="product.html?id=${p.id}"
-             onclick="pushViewContent_preview('${p.id}')">
-            <img src="${p.image}" alt="${p.name}" onerror="this.style.background='#c8d0de';this.removeAttribute('src')" />
-            <div class="card-body">
-              <div class="card-name">${p.name}</div>
-              <div class="card-price">$${p.price.toFixed(2)}</div>
-              <div class="card-desc">${p.description}</div>
-              <span class="btn btn-primary btn-sm">View Product</span>
-            </div>
-          </a>`;
-      });
-    });
-
-    // PageView is fired automatically by GTM on All Pages trigger
-    // No manual push needed here — GTM handles it via the Facebook Pixel tag
-  </script>
 </body>
 </html>

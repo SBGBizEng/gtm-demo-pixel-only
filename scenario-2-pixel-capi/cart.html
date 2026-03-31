@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart — GTM Demo Store (Pixel + CAPI)</title>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+  </script>
+  <!-- GTM Head Snippet — replace GTM-YYYYYYY -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-YYYYYYY');</script>
+</head>
+<body>
+
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-YYYYYYY"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <header>
+    <a class="logo" href="index.html">🛍 CAPIStore</a>
+    <nav>
+      <a href="index.html">Shop</a>
+      <a href="cart.html">Cart <span class="cart-badge">0</span></a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1 class="page-title">Your Cart</h1>
+    <div id="cart-content"><!-- Populated by JS --></div>
+  </div>
+
+  <div id="debug-panel">
+    <div class="debug-title">▶ dataLayer Monitor (Scenario 2 — Pixel + CAPI) &nbsp;|&nbsp;
+      <span style="color:#42b72a;">■ Pixel (browser)</span> &nbsp;
+      <span style="color:#e9711c;">■ CAPI (server)</span>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/products.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCart();
+    });
+
+    function renderCart() {
+      const items = Cart.get();
+      const container = document.getElementById('cart-content');
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:60px 0;color:var(--muted);">
+            <div style="font-size:3rem;margin-bottom:16px;">🛒</div>
+            <h2 style="margin-bottom:12px;">Your cart is empty</h2>
+            <a href="index.html" class="btn btn-accent">Continue Shopping</a>
+          </div>`;
+        return;
+      }
+
+      let rows = '';
+      items.forEach(item => {
+        rows += `
+          <tr>
+            <td><img src="${item.image}" alt="${item.name}"
+                     onerror="this.style.background='#c8d0de';this.removeAttribute('src')" /></td>
+            <td>
+              <a href="product.html?id=${item.id}" style="color:var(--accent);text-decoration:none;font-weight:600;">
+                ${item.name}
+              </a><br/>
+              <span style="color:var(--muted);font-size:.85rem;">${item.category}</span>
+            </td>
+            <td>$${item.price.toFixed(2)}</td>
+            <td>${item.quantity}</td>
+            <td>$${(item.price * item.quantity).toFixed(2)}</td>
+            <td>
+              <button class="btn btn-sm btn-outline" style="color:#e02020;border-color:#e02020;"
+                      onclick="removeItem('${item.id}')">Remove</button>
+            </td>
+          </tr>`;
+      });
+
+      container.innerHTML = `
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Qty</th>
+              <th>Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+
+        <div class="cart-summary">
+          <div class="summary-row"><span>Subtotal</span><span>$${Cart.total().toFixed(2)}</span></div>
+          <div class="summary-row"><span>Shipping</span><span style="color:#42b72a;">FREE</span></div>
+          <div class="summary-row summary-total"><span>Total</span><span>$${Cart.total().toFixed(2)}</span></div>
+          <a href="checkout.html" class="btn btn-accent" style="width:100%;margin-top:16px;display:block;">
+            Proceed to Checkout
+          </a>
+          <a href="index.html" class="btn btn-outline" style="width:100%;margin-top:10px;display:block;color:var(--accent);border-color:var(--accent);">
+            Continue Shopping
+          </a>
+        </div>`;
+    }
+
+    function removeItem(id) {
+      Cart.remove(id);
+      renderCart();
+      Cart._updateBadge();
+    }
+  </script>
+</body>
+</html>

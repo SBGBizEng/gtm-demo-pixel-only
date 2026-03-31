@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — GTM Demo Store (Pixel + CAPI)</title>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+  </script>
+  <!-- GTM Head Snippet — replace GTM-YYYYYYY -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-YYYYYYY');</script>
+</head>
+<body>
+
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-YYYYYYY"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <header>
+    <a class="logo" href="index.html">🛍 CAPIStore</a>
+    <nav>
+      <a href="index.html">Shop</a>
+      <a href="cart.html">Cart <span class="cart-badge">0</span></a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1 class="page-title">Checkout</h1>
+
+    <!-- PII Status Banner -->
+    <div style="background:#fff3e0;border:1px solid var(--accent);border-radius:8px;padding:14px 18px;margin-bottom:24px;font-size:.875rem;">
+      <strong>🔬 Training Scenario — PII Collection Status:</strong>
+      PII fields below are collected and stored in <code>window.customerPII</code> and pushed to
+      <code>dataLayer</code> as <code>pii_collected</code> event. However, the CAPI payloads
+      (<code>capi_initiate_checkout</code>, <code>capi_purchase</code>) do <strong>NOT</strong>
+      include <code>user_data</code> — this is intentional for the "before" state of this exercise.
+    </div>
+
+    <div class="checkout-grid">
+
+      <!-- ── Shipping Form ── -->
+      <div>
+        <div class="form-card">
+          <h2>Shipping Information</h2>
+          <form id="checkout-form" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="first-name">First Name *</label>
+                <input type="text" id="first-name" placeholder="Jane" required />
+              </div>
+              <div class="form-group">
+                <label for="last-name">Last Name *</label>
+                <input type="text" id="last-name" placeholder="Doe" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">
+                Email Address *
+                <span style="background:#fff3e0;color:var(--accent);font-size:.75rem;padding:2px 6px;border-radius:4px;margin-left:6px;">PII — collected, not sent to CAPI</span>
+              </label>
+              <input type="email" id="email" placeholder="jane@example.com" required />
+            </div>
+            <div class="form-group">
+              <label for="phone">
+                Phone Number
+                <span style="background:#fff3e0;color:var(--accent);font-size:.75rem;padding:2px 6px;border-radius:4px;margin-left:6px;">PII — collected, not sent to CAPI</span>
+              </label>
+              <input type="tel" id="phone" placeholder="+1 555 000 0000" />
+            </div>
+            <div class="form-group">
+              <label for="address">Street Address *</label>
+              <input type="text" id="address" placeholder="123 Main St" required />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">City *</label>
+                <input type="text" id="city" placeholder="San Francisco" required />
+              </div>
+              <div class="form-group">
+                <label for="zip">ZIP Code *</label>
+                <input type="text" id="zip" placeholder="94103" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="country">Country</label>
+              <select id="country">
+                <option value="US">United States</option>
+                <option value="GB">United Kingdom</option>
+                <option value="CA">Canada</option>
+                <option value="AU">Australia</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <div class="form-card" style="margin-top:20px;">
+          <h2>Payment</h2>
+          <div class="form-group">
+            <label for="card-number">Card Number</label>
+            <input type="text" id="card-number" placeholder="4242 4242 4242 4242" maxlength="19" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="card-expiry">Expiry</label>
+              <input type="text" id="card-expiry" placeholder="MM / YY" maxlength="7" />
+            </div>
+            <div class="form-group">
+              <label for="card-cvc">CVC</label>
+              <input type="text" id="card-cvc" placeholder="123" maxlength="4" />
+            </div>
+          </div>
+          <p style="font-size:.8rem;color:var(--muted);margin-top:8px;">
+            ⚠️ This is a demo store. No real payment is processed.
+          </p>
+        </div>
+      </div>
+
+      <!-- ── Order Summary ── -->
+      <div>
+        <div class="form-card" id="order-summary">
+          <h2>Order Summary</h2>
+          <!-- Populated by JS -->
+        </div>
+
+        <div style="margin-top:16px;padding:16px;background:#fff3e0;border-radius:8px;border-left:4px solid var(--accent);font-size:.85rem;">
+          <strong>📋 GTM Events on this page:</strong><br/><br/>
+
+          <strong>On page load:</strong><br/>
+          <span style="color:#42b72a;">■</span> <code>pixel_initiate_checkout</code> → Pixel <em>InitiateCheckout</em><br/>
+          <span style="color:#e9711c;">■</span> <code>capi_initiate_checkout</code> → CAPI <em>InitiateCheckout</em><br/><br/>
+
+          <strong>When form is filled (blur events):</strong><br/>
+          <code>pii_collected</code> → stores PII in <code>window.customerPII</code> &amp; dataLayer<br/><br/>
+
+          <strong>On Place Order click:</strong><br/>
+          <span style="color:#42b72a;">■</span> <code>pixel_purchase</code> → Pixel <em>Purchase</em><br/>
+          <span style="color:#e9711c;">■</span> <code>capi_purchase</code> → CAPI <em>Purchase</em><br/><br/>
+
+          <strong style="color:#c0392b;">⚠ CAPI payloads contain NO user_data (PII not forwarded)</strong><br/>
+          <strong style="color:#c0392b;">⚠ No event_id on any event (no deduplication)</strong>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;text-align:right;">
+      <button class="btn btn-accent" id="place-order-btn" style="padding:14px 40px;font-size:1rem;">
+        Place Order →
+      </button>
+    </div>
+  </div>
+
+  <div id="debug-panel">
+    <div class="debug-title">▶ dataLayer Monitor (Scenario 2 — Pixel + CAPI) &nbsp;|&nbsp;
+      <span style="color:#42b72a;">■ Pixel (browser)</span> &nbsp;
+      <span style="color:#e9711c;">■ CAPI (server)</span>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/products.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderOrderSummary();
+
+      // ── Fire InitiateCheckout on page load ────────────────────────────────
+      pushInitiateCheckout();   // browser pixel
+      capiInitiateCheckout();   // server CAPI (no user_data, no event_id)
+
+      // ── PII collection: capture on blur ──────────────────────────────────
+      // PII is stored in window.customerPII and pushed to dataLayer.
+      // It is NOT included in CAPI payloads — intentional for this scenario.
+      const piiFields = ['email', 'phone', 'first-name', 'last-name', 'city', 'zip'];
+      piiFields.forEach(fieldId => {
+        const el = document.getElementById(fieldId);
+        if (!el) return;
+        el.addEventListener('blur', () => {
+          collectPII();
+        });
+      });
+    });
+
+    function collectPII() {
+      const email     = document.getElementById('email').value.trim();
+      const phone     = document.getElementById('phone').value.trim();
+      const firstName = document.getElementById('first-name').value.trim();
+      const lastName  = document.getElementById('last-name').value.trim();
+      const city      = document.getElementById('city').value.trim();
+      const zip       = document.getElementById('zip').value.trim();
+      const country   = document.getElementById('country').value;
+
+      // Store in global object (accessible as GTM variable via JS variable)
+      window.customerPII = { email, phone, firstName, lastName, city, zip, country };
+
+      // Push to dataLayer so GTM can read via Data Layer Variable
+      // NOTE: This push makes PII visible to GTM — but the CAPI tag
+      // is NOT configured to use these variables (intentional gap).
+      window.dataLayer.push({
+        event:      'pii_collected',
+        customer_email:      email      || undefined,
+        customer_phone:      phone      || undefined,
+        customer_first_name: firstName  || undefined,
+        customer_last_name:  lastName   || undefined,
+        customer_city:       city       || undefined,
+        customer_zip:        zip        || undefined,
+        customer_country:    country    || undefined
+        // NOTE: Values are RAW (unhashed) — hashing intentionally omitted
+        // NOTE: These variables are NOT mapped to CAPI user_data in GTM
+      });
+
+      debugLog('pii_collected', {
+        note: 'PII stored in window.customerPII and dataLayer — NOT forwarded to CAPI',
+        fields_collected: Object.keys(window.customerPII).filter(k => window.customerPII[k])
+      });
+    }
+
+    function renderOrderSummary() {
+      const items = Cart.get();
+      const summary = document.getElementById('order-summary');
+      if (items.length === 0) {
+        summary.innerHTML += '<p style="color:var(--muted);">Your cart is empty.</p>';
+        return;
+      }
+      let html = '';
+      items.forEach(i => {
+        html += `<div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:.9rem;">
+          <span>${i.name} × ${i.quantity}</span>
+          <span>$${(i.price * i.quantity).toFixed(2)}</span>
+        </div>`;
+      });
+      html += `<div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;font-weight:700;">
+        <span>Total</span><span>$${Cart.total().toFixed(2)}</span>
+      </div>`;
+      summary.innerHTML += html;
+    }
+
+    document.getElementById('place-order-btn').addEventListener('click', () => {
+      const email     = document.getElementById('email').value.trim();
+      const firstName = document.getElementById('first-name').value.trim();
+      if (!email || !firstName) {
+        alert('Please fill in at least your first name and email address.');
+        return;
+      }
+
+      // Final PII capture before purchase
+      collectPII();
+
+      const orderId = 'ORD-' + Date.now();
+
+      // ── Fire Purchase (both pixel and CAPI) ───────────────────────────────
+      pushPurchase(orderId);   // browser pixel — no event_id
+      capiPurchase(orderId);   // server CAPI — no user_data, no event_id
+
+      sessionStorage.setItem('last_order_id', orderId);
+      sessionStorage.setItem('last_order_total', Cart.total().toFixed(2));
+
+      setTimeout(() => {
+        Cart.clear();
+        window.location.href = 'confirmation.html';
+      }, 600);
+    });
+  </script>
+</body>
+</html>
